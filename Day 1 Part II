@@ -1,0 +1,113 @@
+#include <iostream>
+#include <string>
+#include <bits/stdc++.h> 
+#include <algorithm>
+
+int GetFirstDigit(std::string line)
+{
+    int FirstDigit;
+    std::string::iterator it; 
+    for (it = line.begin(); it != line.end(); it++) { 
+        if (std::isdigit(*it))
+        {
+            FirstDigit = *it - '0';
+            break;
+        }
+    } 
+    return(FirstDigit);
+}
+
+int GetLastDigit(std::string Line)
+{
+    int LastDigit;
+    std::reverse(Line.begin(), Line.end());
+    LastDigit = GetFirstDigit(Line);
+    return(LastDigit);
+}
+
+int GetCalibrationvalue(std::string Line)
+{
+    int CalibrationValue;
+    int FirstDigit;
+    int LastDigit;
+    FirstDigit = GetFirstDigit(Line);
+    LastDigit = GetLastDigit(Line);
+    return(10*FirstDigit + LastDigit);
+}
+
+
+std::string NumberToText(int Number)
+{
+    switch(Number)
+    {
+        case 0: 
+            return("zero");
+            break;
+        case 1: 
+            return("one");
+            break;
+        case 2: 
+            return("two");
+            break;
+        case 3: 
+            return("three");
+            break;
+        case 4: 
+            return("four");
+            break;
+        case 5: 
+            return("five");
+            break;
+        case 6: 
+            return("six");
+            break;
+        case 7: 
+            return("seven");
+            break;
+        case 8: 
+            return("eight");
+            break;
+        case 9: 
+            return("nine");
+            break;
+        return("");
+    }
+    
+}
+
+std::string ReplaceNumber(std::string StringToReplace, int Number)
+{
+    std::string result;
+    std::string NumberAsString = NumberToText(Number);
+    std::regex Number_re(NumberAsString);
+    std::string Digit = std::to_string(Number);
+    result = std::regex_replace(StringToReplace, Number_re, Digit);
+    return(result);
+}
+
+std::string ReplaceAllNumbers(std::string StringToReplace)
+{
+    std::string result;
+    result = StringToReplace;
+    for(int i = 0; i < 10; ++i)
+    {
+        result = ReplaceNumber(result, i);
+    }
+    return(result);
+}
+
+int main()
+{
+    std::string Line;
+    int SumCalibrationValues;
+    SumCalibrationValues = 0;
+    while(std::getline(std::cin, Line))
+    {
+        int CalibrationValue;
+        Line = ReplaceAllNumbers(Line);
+        CalibrationValue = GetCalibrationvalue(Line);
+        SumCalibrationValues += CalibrationValue;
+    }
+    std::cout << "Sum of all calibration values is: " << SumCalibrationValues;
+    return 0;
+}
