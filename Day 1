@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include<cstring>
+#include <algorithm>
 
 int GetFirstDigit(std::string line)
 {
@@ -15,16 +17,34 @@ int GetFirstDigit(std::string line)
     return(FirstDigit);
 }
 
-int main()
+int GetLastDigit(std::string Line)
 {
-    std::string line;
+    int LastDigit;
+    std::reverse(Line.begin(), Line.end());
+    LastDigit = GetFirstDigit(Line);
+    return(LastDigit);
+}
+
+int GetCalibrationvalue(std::string Line)
+{
+    int CalibrationValue;
     int FirstDigit;
     int LastDigit;
-    while(std::getline(std::cin, line))
+    FirstDigit = GetFirstDigit(Line);
+    LastDigit = GetLastDigit(Line);
+    return(10*FirstDigit + LastDigit);
+}
+
+
+int main()
+{
+    std::string Line;
+    while(std::getline(std::cin, Line))
     {
-        FirstDigit = GetFirstDigit(line);
-        std::cout << "The line you entered: " << line << 
-        " The first digit:" << FirstDigit << std::endl;
+        int CalibrationValue;
+        CalibrationValue = GetCalibrationvalue(Line);
+        std::cout << "The line you entered: " << Line << 
+        " The CalibrationValue" << CalibrationValue << std::endl;
     }
 
     return 0;
