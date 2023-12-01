@@ -81,7 +81,8 @@ std::string ReplaceNumber(std::string StringToReplace, int Number)
     std::string NumberAsString = NumberToText(Number);
     std::regex Number_re(NumberAsString);
     std::string Digit = std::to_string(Number);
-    result = std::regex_replace(StringToReplace, Number_re, Digit);
+    result = std::regex_replace(StringToReplace, Number_re, NumberAsString + Digit+ NumberAsString);
+    //result = std::regex_replace(StringToReplace, Number_re, Digit);
     return(result);
 }
 
@@ -89,7 +90,7 @@ std::string ReplaceAllNumbers(std::string StringToReplace)
 {
     std::string result;
     result = StringToReplace;
-    for(int i = 0; i < 10; ++i)
+    for(int i = 1; i < 10; ++i)
     {
         result = ReplaceNumber(result, i);
     }
@@ -104,9 +105,13 @@ int main()
     while(std::getline(std::cin, Line))
     {
         int CalibrationValue;
+        //std::cout << Line << " ";
         Line = ReplaceAllNumbers(Line);
+        //std::cout << Line << " ";
         CalibrationValue = GetCalibrationvalue(Line);
+        //std::cout << CalibrationValue << std::endl;
         SumCalibrationValues += CalibrationValue;
+        
     }
     std::cout << "Sum of all calibration values is: " << SumCalibrationValues;
     return 0;
