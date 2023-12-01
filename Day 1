@@ -1,0 +1,31 @@
+#include <iostream>
+#include <string>
+
+int GetFirstDigit(std::string line)
+{
+    int FirstDigit;
+    std::string::iterator it; 
+    for (it = line.begin(); it != line.end(); it++) { 
+        if (std::isdigit(*it))
+        {
+            FirstDigit = *it - '0';
+            break;
+        }
+    } 
+    return(FirstDigit);
+}
+
+int main()
+{
+    std::string line;
+    int FirstDigit;
+    int LastDigit;
+    while(std::getline(std::cin, line))
+    {
+        FirstDigit = GetFirstDigit(line);
+        std::cout << "The line you entered: " << line << 
+        " The first digit:" << FirstDigit << std::endl;
+    }
+
+    return 0;
+}
