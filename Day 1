@@ -39,13 +39,14 @@ int GetCalibrationvalue(std::string Line)
 int main()
 {
     std::string Line;
+    int SumCalibrationValues;
+    SumCalibrationValues = 0;
     while(std::getline(std::cin, Line))
     {
         int CalibrationValue;
         CalibrationValue = GetCalibrationvalue(Line);
-        std::cout << "The line you entered: " << Line << 
-        " The CalibrationValue" << CalibrationValue << std::endl;
+        SumCalibrationValues += CalibrationValue;
     }
-
+    std::cout << "Sum of all calibration values is: " << SumCalibrationValues;
     return 0;
 }
