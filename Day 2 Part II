@@ -19,65 +19,48 @@ int ReadNumberFromString(std::string s)
     return(n);
 }
 
-bool GameValuePossible(std::string GameValue, int NAllowed)
+int MaxNumberPerGameAndColour(std::string GameLine,std::regex color)
 {
-    int n;
-    int i = 0;
-    n = ReadNumberFromString(GameValue);
-    return (n <= NAllowed);
-}
-
-bool GameIsPossibleOneColour(std::string GameLine,std::regex color, int NMax)
-{
-    bool result = true;
+    int result = 0;
     std::smatch m;
     while (std::regex_search (GameLine,m,color)) 
     {
-        if (not GameValuePossible(m[0], NMax))
-        {
-            result = false;
-        }
+        int NewNumber = ReadNumberFromString(m[0]);
+        result = std::max(NewNumber, result);
         GameLine = m.suffix().str();
     }
     return(result); 
 }
-
-bool GameIsPossible(std::string GameLine, int NRed, int NBlue, int NGreen)
+int Power(int NRed, int NBlue, int NGreen)
 {
-    bool result = true;
+    return(NBlue*NRed*NGreen);
+}
+
+int PowerOfAGame(std::string GameLine)
+{
+    int result = 0;
     std::regex red ("[0-9]+ red"); 
-    bool RedIsPossible = GameIsPossibleOneColour(GameLine, red, NRed);
+    int NRed = MaxNumberPerGameAndColour(GameLine, red);
     std::regex blue ("[0-9]+ blue"); 
-    bool BlueIsPossible = GameIsPossibleOneColour(GameLine, blue, NBlue);
+    int NBlue = MaxNumberPerGameAndColour(GameLine, blue);
     std::regex green ("[0-9]+ green"); 
-    bool GreenIsPossible = GameIsPossibleOneColour(GameLine, green, NGreen);
-    result = RedIsPossible && BlueIsPossible && GreenIsPossible;
+    int NGreen = MaxNumberPerGameAndColour(GameLine, green);
+    result = Power(NRed, NBlue, NGreen);
     return(result);
 }
 
-int MinimalPower()
-{
-    int NRed = 0;
-    int NBlue = 0;
-    int NGreen = 0;
-    return(NBlue*NRed*NGreen);
-}
 
 int main()
 {
     std::string GameLine;
-    int SumPossibleGameValues;
-    SumPossibleGameValues = 0;
+    int SumPower;
+    SumPower = 0;
     
-    for(int GameNummer = 1;std::getline(std::cin, GameLine); GameNummer++)
+    while(std::getline(std::cin, GameLine))
     {
-        if (GameIsPossible(GameLine, NRed, NBlue, NGreen))
-        {
-            SumPossibleGameValues += GameNummer;
-        }
-       
-
+        int GamePower = PowerOfAGame(GameLine);
+        SumPower += GamePower;
     }
-    std::cout << "Sum of all possible games is: " << SumPossibleGameValues;
+    std::cout << "Sum of all powers is: " << SumPower;
     return 0;
 }
