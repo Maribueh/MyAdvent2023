@@ -1,0 +1,83 @@
+#include <iostream>
+#include <string>
+#include <bits/stdc++.h> 
+
+int ReadNumberFromString(std::string s)
+{
+    int n = 0;
+    std::string::iterator it; 
+    for (it = s.begin(); it != s.end(); it++) { 
+        
+        if (std::isdigit(*it))
+        {
+            int digit;
+            digit = (*it - '0');
+            n *= 10;
+            n += digit;
+        }
+    } 
+    return(n);
+}
+
+bool GameValuePossible(std::string GameValue, int NAllowed)
+{
+    int n;
+    int i = 0;
+    n = ReadNumberFromString(GameValue);
+    return (n <= NAllowed);
+}
+
+bool GameIsPossibleOneColour(std::string GameLine,std::regex color, int NMax)
+{
+    bool result = true;
+    std::smatch m;
+    while (std::regex_search (GameLine,m,color)) 
+    {
+        if (not GameValuePossible(m[0], NMax))
+        {
+            result = false;
+        }
+        GameLine = m.suffix().str();
+    }
+    return(result); 
+}
+
+bool GameIsPossible(std::string GameLine, int NRed, int NBlue, int NGreen)
+{
+    bool result = true;
+    std::regex red ("[0-9]+ red"); 
+    bool RedIsPossible = GameIsPossibleOneColour(GameLine, red, NRed);
+    std::regex blue ("[0-9]+ blue"); 
+    bool BlueIsPossible = GameIsPossibleOneColour(GameLine, blue, NBlue);
+    std::regex green ("[0-9]+ green"); 
+    bool GreenIsPossible = GameIsPossibleOneColour(GameLine, green, NGreen);
+    result = RedIsPossible && BlueIsPossible && GreenIsPossible;
+    return(result);
+}
+
+int MinimalPower()
+{
+    int NRed = 0;
+    int NBlue = 0;
+    int NGreen = 0;
+    return(NBlue*NRed*NGreen);
+}
+
+int main()
+{
+    std::string GameLine;
+    int SumPossibleGameValues;
+    SumPossibleGameValues = 0;
+    
+    for(int GameNummer = 1;std::getline(std::cin, GameLine); GameNummer++)
+    {
+        if (GameIsPossible(GameLine, NRed, NBlue, NGreen))
+        {
+            SumPossibleGameValues += GameNummer;
+        }
+       
+
+    }
+    std::cout << "Sum of all possible games is: " << SumPossibleGameValues;
+    return 0;
+}
