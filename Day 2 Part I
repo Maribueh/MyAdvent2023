@@ -1,0 +1,36 @@
+#include <iostream>
+#include <string>
+#include <bits/stdc++.h> 
+
+bool GameIsPossible(std::string GameLine, int NRed, int NBlue, int NGreen)
+{
+    std::regex blue ("[0-9] blue"); 
+    std::smatch m;
+    std::regex_search (GameLine,m,blue);
+    for (auto x:m) std::cout << x << " ";
+    return(true);
+}
+
+int main()
+{
+    int NRed = 12;
+    int NBlue = 14;
+    int NGreen = 13;
+    std::string GameLine;
+    int SumPossibleGameValues;
+    SumPossibleGameValues = 0;
+    
+    for(int GameNummer = 1;std::getline(std::cin, GameLine); GameNummer++)
+    {
+        std::cout << GameLine << std::endl;
+        if (GameIsPossible(GameLine, NRed, NBlue, NGreen))
+        {
+            SumPossibleGameValues += GameNummer;
+            std::cout << GameNummer;
+        }
+       
+
+    }
+    std::cout << "Sum of all possible games is: " << SumPossibleGameValues;
+    return 0;
+}
