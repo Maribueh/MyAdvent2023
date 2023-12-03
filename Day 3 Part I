@@ -1,0 +1,60 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+typedef std::vector <int >:: const_iterator Cvit;
+typedef std::vector <int >:: iterator Vit;
+
+void print(std::vector<int> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+void FillNumbers(std::string EngineSchematic, std::vector<int>& Numbers)
+{
+    bool LastWasADigit = false;;
+    for(int i = 0; i < EngineSchematic.size(); i++)
+    {
+        if (std::isdigit(EngineSchematic[i]))
+        {
+            if (LastWasADigit) 
+            {
+                *(Numbers.end() -1 ) *= 10;
+                *(Numbers.end() -1 ) += EngineSchematic[i];
+            }
+            else
+            {
+                LastWasADigit = true;
+                Numbers.push_back(EngineSchematic[i]);
+            }
+            
+        }
+        else
+        {
+            LastWasADigit = false;
+        }
+    }
+    
+}
+
+int main()
+{
+    std::vector<bool> IsSymbol1;
+    std::vector<bool> IsSymbol2;
+    std::vector<bool> IsSymbol3;
+    std::vector<int> Numbers;
+    std::vector<bool> NumberCounts;
+    std::string EngineSchematic;
+    
+    while(std::getline(std::cin, EngineSchematic))
+    {
+        std::cout << "Line: " << EngineSchematic << std::endl;
+        FillNumbers(EngineSchematic, Numbers);
+        std::cout << "Numbers: ";
+        print(Numbers);
+        std::cout << std::endl;
+    }
+    
+    return 0;
+}
