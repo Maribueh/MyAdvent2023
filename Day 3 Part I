@@ -2,10 +2,17 @@
 #include <string>
 #include <vector>
 
-typedef std::vector <int >:: const_iterator Cvit;
-typedef std::vector <int >:: iterator Vit;
+typedef std::vector<bool> Vbool;
+typedef std::vector<bool>:: iterator Vit;
 
 void print(std::vector<int> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+void print(std::vector<bool> const &input)
 {
     for (int i = 0; i < input.size(); i++) {
         std::cout << input.at(i) << ' ';
@@ -30,7 +37,7 @@ void AddDigitToNumbers(char Digit, std::vector<int>& Numbers, bool LastWasADigit
 
 void FillNumbers(std::string EngineSchematic, std::vector<int>& Numbers)
 {
-    bool LastWasADigit = false;;
+    bool LastWasADigit = false;
     for(int i = 0; i < EngineSchematic.size(); i++)
     {
         if (std::isdigit(EngineSchematic[i]))
@@ -46,21 +53,48 @@ void FillNumbers(std::string EngineSchematic, std::vector<int>& Numbers)
     
 }
 
+bool IsSymbol(char c)
+{
+    return(not (std::isdigit(c) || std::isalpha(c) || c == '.'));
+}
+
+void FillIsSymbolAfter(std::string EngineSchematic, Vbool& IsSymbolAfter)
+{
+    for(int i = 0; i < EngineSchematic.size(); i++)
+    {
+        IsSymbolAfter.at(i) = IsSymbol(EngineSchematic[i]);
+    }
+}
+
+void PrepareSymbolLines(std::string EngineSchematic, Vbool& IsSymbolBefore, Vbool& IsSymbolNow, Vbool& IsSymbolAfter)
+{
+    IsSymbolBefore = IsSymbolNow;
+    IsSymbolNow = IsSymbolAfter;
+    FillIsSymbolAfter(EngineSchematic, IsSymbolAfter);
+}
+
 int main()
 {
-    std::vector<bool> IsSymbol1;
-    std::vector<bool> IsSymbol2;
-    std::vector<bool> IsSymbol3;
+    
     std::vector<int> Numbers;
-    std::vector<bool> NumberCounts;
+    Vbool NumberCounts;
     std::string EngineSchematic;
     
+    std::getline(std::cin, EngineSchematic);
+    int N = EngineSchematic.size();
+    Vbool IsSymbolBefore (N, false);
+    Vbool IsSymbolNow (N, false);
+    Vbool IsSymbolAfter (N, false);
     while(std::getline(std::cin, EngineSchematic))
     {
         std::cout << "Line: " << EngineSchematic << std::endl;
         FillNumbers(EngineSchematic, Numbers);
-        std::cout << "Numbers: ";
-        print(Numbers);
+        //std::cout << "Numbers: ";
+        //print(Numbers);
+        //std::cout << std::endl;
+        PrepareSymbolLines(EngineSchematic, IsSymbolBefore, IsSymbolNow, IsSymbolAfter);
+        std::cout << "isSymbol: ";
+        print(IsSymbolAfter);
         std::cout << std::endl;
     }
     
