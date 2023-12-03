@@ -11,6 +11,23 @@ void print(std::vector<int> const &input)
         std::cout << input.at(i) << ' ';
     }
 }
+
+void AddDigitToNumbers(char Digit, std::vector<int>& Numbers, bool LastWasADigit)
+{
+    int RealDigit; 
+    RealDigit = (Digit -'0');
+    if (LastWasADigit) 
+    {
+        *(Numbers.end() -1 ) *= 10;
+        *(Numbers.end() -1 ) += RealDigit;
+    }
+    else
+    {
+        Numbers.push_back(RealDigit);
+    }
+    
+}
+
 void FillNumbers(std::string EngineSchematic, std::vector<int>& Numbers)
 {
     bool LastWasADigit = false;;
@@ -18,17 +35,8 @@ void FillNumbers(std::string EngineSchematic, std::vector<int>& Numbers)
     {
         if (std::isdigit(EngineSchematic[i]))
         {
-            if (LastWasADigit) 
-            {
-                *(Numbers.end() -1 ) *= 10;
-                *(Numbers.end() -1 ) += EngineSchematic[i];
-            }
-            else
-            {
-                LastWasADigit = true;
-                Numbers.push_back(EngineSchematic[i]);
-            }
-            
+            AddDigitToNumbers(EngineSchematic[i], Numbers, LastWasADigit);
+            LastWasADigit = true;
         }
         else
         {
