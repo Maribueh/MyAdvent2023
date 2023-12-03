@@ -73,30 +73,85 @@ void PrepareSymbolLines(std::string EngineSchematic, Vbool& IsSymbolBefore, Vboo
     FillIsSymbolAfter(EngineSchematic, IsSymbolAfter);
 }
 
+bool CalculateDigitCounts(int DigitPosition, Vbool& IsSymbolBefore, Vbool& IsSymbolNow, Vbool& IsSymbolAfter)
+{
+    bool result;
+    int i = DigitPosition;
+    result = IsSymbolBefore.at(i -1) || IsSymbolBefore.at(i) || IsSymbolBefore.at(i+1);
+    result = result || IsSymbolNow.at(i-1) || IsSymbolNow.at(i +1);
+    result = result || IsSymbolAfter.at(i-1) || IsSymbolAfter.at(i) || IsSymbolAfter.at(i);
+    return(result);
+}
+
+void CalculateNumberCounts(std::string EngineSchematic, Vbool& IsSymbolBefore, Vbool& IsSymbolNow, Vbool& IsSymbolAfter, Vbool& NumberCounts)
+{
+    bool LastWasADigit = false;
+    for(int i = 1; i < EngineSchematic.size() -1; i++) // EngineSchematic is padded
+    {
+        if (std::isdigit(EngineSchematic[i]))
+        {
+            bool DigitCounts = CalculateDigitCounts(i, IsSymbolBefore, IsSymbolNow, IsSymbolAfter);
+            if (LastWasADigit) 
+            {
+                *(NumberCounts.end() -1 ) = *(NumberCounts.end() -1 ) || DigitCounts;
+            }
+            else
+            {
+                NumberCounts.push_back(DigitCounts);
+            }
+            LastWasADigit = true;
+        }
+        else
+        {
+            LastWasADigit = false;
+        }
+    }
+}
+
+
+std::string PadLine(std::string Line)
+{
+    return("." + Line + ".");
+}
+
 int main()
 {
-    
     std::vector<int> Numbers;
     Vbool NumberCounts;
     std::string EngineSchematic;
+    std::string EngineSchematicBefore;
     
+    //get first Line
     std::getline(std::cin, EngineSchematic);
+    EngineSchematic = PadLine(EngineSchematic);
+    std::cout << "Line: " << EngineSchematic << std::endl;
     int N = EngineSchematic.size();
     Vbool IsSymbolBefore (N, false);
     Vbool IsSymbolNow (N, false);
     Vbool IsSymbolAfter (N, false);
+    
+    //treat first Line
+    FillNumbers(EngineSchematic, Numbers);
+    PrepareSymbolLines(EngineSchematic, IsSymbolBefore, IsSymbolNow, IsSymbolAfter);
+    EngineSchematicBefore = EngineSchematic;
+    
+    
     while(std::getline(std::cin, EngineSchematic))
     {
+        EngineSchematic = PadLine(EngineSchematic);
         std::cout << "Line: " << EngineSchematic << std::endl;
         FillNumbers(EngineSchematic, Numbers);
-        //std::cout << "Numbers: ";
-        //print(Numbers);
-        //std::cout << std::endl;
         PrepareSymbolLines(EngineSchematic, IsSymbolBefore, IsSymbolNow, IsSymbolAfter);
-        std::cout << "isSymbol: ";
-        print(IsSymbolAfter);
+        CalculateNumberCounts(EngineSchematicBefore, IsSymbolBefore, IsSymbolNow, IsSymbolAfter, NumberCounts);
+        EngineSchematicBefore = EngineSchematic;
+        std::cout << "Number Count: ";
+        print(NumberCounts); 
         std::cout << std::endl;
     }
+    IsSymbolBefore = IsSymbolNow;
+    IsSymbolNow = IsSymbolAfter;
+    std::fill(IsSymbolAfter.begin(), IsSymbolAfter.end(), false);
+    CalculateNumberCounts(EngineSchematic, IsSymbolBefore, IsSymbolNow, IsSymbolAfter, NumberCounts);
     
     return 0;
 }
