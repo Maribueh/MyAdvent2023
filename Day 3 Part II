@@ -1,0 +1,175 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+typedef std::vector<bool> Vbool;
+typedef std::vector<int> Vint;
+typedef std::vector<bool>:: iterator Vit;
+
+void print(std::vector<int> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+void print(std::vector<bool> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+void AddDigitToNumbers(char Digit, std::vector<int>& Numbers, bool LastWasADigit)
+{
+    int RealDigit; 
+    RealDigit = (Digit -'0');
+    if (LastWasADigit) 
+    {
+        *(Numbers.end() -1 ) *= 10;
+        *(Numbers.end() -1 ) += RealDigit;
+    }
+    else
+    {
+        Numbers.push_back(RealDigit);
+    }
+    
+}
+
+void FillNumbers(std::string EngineSchematic, Vint& Numbers, Vint& PartOfNumberAfter)
+{
+    bool LastWasADigit = false;
+    for(int i = 0; i < EngineSchematic.size(); i++)
+    {
+        if (std::isdigit(EngineSchematic[i]))
+        {
+            AddDigitToNumbers(EngineSchematic[i], Numbers, LastWasADigit);
+            LastWasADigit = true;
+            PartOfNumberAfter[i] = *(Numbers.end() -1);
+        }
+        else
+        {
+            LastWasADigit = false;
+            PartOfNumberAfter[i] = -1;
+        }
+    }
+    
+}
+
+bool IsStar(char c)
+{
+    return(c == '*');
+}
+
+
+void SwapPartOfNumber(Vint& PartOfNumberBefore, Vint& PartOfNumberNow, Vint& PartOfNumberAfter)
+{
+    PartOfNumberBefore = PartOfNumberNow;
+    PartOfNumberNow = PartOfNumberAfter;
+}
+
+void AddNumberAtPosition(int Position, int& FirstNumber, int& SecondNumber, int& ThirdNumber)
+{
+    if ((Position != FirstNumber) && (FirstNumber = -1))
+    {
+        FirstNumber = Position;
+    }
+    else if ((Position != SecondNumber) && (SecondNumber = -1))
+    {
+        SecondNumber = Position;
+    }
+    else
+    {
+        ThirdNumber = Position;
+    }
+}
+
+int CalculateGearNumber(int DigitPosition, Vint& PartOfNumberBefore, Vint& PartOfNumberNow, Vint& PartOfNumberAfter, Vint Numbers)
+{
+    int FirstNumber = -1;
+    int SecondNumber = -1;
+    int ThirdNumber = -1;
+    int i = DigitPosition;
+    AddNumberAtPosition(PartOfNumberBefore.at(i-1), FirstNumber, SecondNumber, ThirdNumber);
+    AddNumberAtPosition(PartOfNumberBefore.at(i), FirstNumber, SecondNumber, ThirdNumber);
+    AddNumberAtPosition(PartOfNumberBefore.at(i+1), FirstNumber, SecondNumber, ThirdNumber);
+    AddNumberAtPosition(PartOfNumberNow.at(i-1), FirstNumber, SecondNumber, ThirdNumber);
+    AddNumberAtPosition(PartOfNumberNow.at(i+1), FirstNumber, SecondNumber, ThirdNumber);
+    AddNumberAtPosition(PartOfNumberAfter.at(i-1), FirstNumber, SecondNumber, ThirdNumber);
+    AddNumberAtPosition(PartOfNumberAfter.at(i), FirstNumber, SecondNumber, ThirdNumber);
+    AddNumberAtPosition(PartOfNumberAfter.at(i+1), FirstNumber, SecondNumber, ThirdNumber);
+    if ((FirstNumber = -1) or (SecondNumber = -1) or (ThirdNumber != -1))
+    {
+        return(0);
+    }
+    return(Numbers.at(FirstNumber)*Numbers.at(SecondNumber));
+}
+
+void CalculateGearNumbers(std::string EngineSchematic, Vint& PartOfNumberBefore, Vint& PartOfNumberNow, Vint& PartOfNumberAfter, Vint& GearNumbers, Vint Numbers)
+{
+    for(int i = 1; i < EngineSchematic.size() -1; i++) // EngineSchematic is padded
+    {
+        //std::cout << EngineSchematic[i] << ": " << CalculateDigitCounts(i, IsSymbolBefore, IsSymbolNow, IsSymbolAfter) << ", ";
+        if (IsStar(EngineSchematic[i]))
+        {
+            GearNumbers[i] = CalculateGearNumber(i, PartOfNumberBefore, PartOfNumberNow, PartOfNumberAfter, Numbers);
+        }
+    }
+}
+
+
+std::string PadLine(std::string Line)
+{
+    return("." + Line + ".");
+}
+
+int main()
+{
+    std::vector<int> GearNumbers;
+    std::vector<int> Numbers;
+    std::string EngineSchematic;
+    std::string EngineSchematicBefore;
+    
+    //get first Line
+    std::getline(std::cin, EngineSchematic);
+    EngineSchematic = PadLine(EngineSchematic);
+    //std::cout << "Line: " << EngineSchematic << std::endl;
+    int N = EngineSchematic.size();
+    Vint PartOfNumberBefore (N, -1);
+    Vint PartOfNumberNow (N, -1);
+    Vint PartOfNumberAfter (N, -1);
+    
+    //treat first Line
+    SwapPartOfNumber(PartOfNumberBefore, PartOfNumberNow, PartOfNumberAfter);
+    FillNumbers(EngineSchematic, Numbers, PartOfNumberAfter);
+    EngineSchematicBefore = EngineSchematic;
+    
+    
+    while(std::getline(std::cin, EngineSchematic))
+    {
+        EngineSchematic = PadLine(EngineSchematic);
+        std::cout << "Line: " << EngineSchematic << std::endl;
+        SwapPartOfNumber(PartOfNumberBefore, PartOfNumberNow, PartOfNumberAfter);
+        FillNumbers(EngineSchematic, Numbers, PartOfNumberAfter);
+        std::cout << "Numbers: ";
+        print(Numbers);
+        std::cout << "PartofNumber: ";
+        print(PartOfNumberBefore);
+        //CalculateGearNumbers(EngineSchematicBefore, PartOfNumberBefore, PartOfNumberNow, PartOfNumberAfter, GearNumbers, Numbers);
+        EngineSchematicBefore = EngineSchematic;
+    }
+    PartOfNumberBefore = PartOfNumberNow;
+    PartOfNumberNow = PartOfNumberAfter;
+    std::fill(PartOfNumberAfter.begin(), PartOfNumberAfter.end(), false);
+    //CalculateGearNumbers(EngineSchematic, PartOfNumberBefore, PartOfNumberNow, PartOfNumberAfter, GearNumbers, Numbers);
+    
+    int sum = 0;
+    for(int i = 0; i < GearNumbers.size(); i++)
+    {
+        sum += Numbers.at(i);
+    }
+    
+    std::cout << "sum: " << sum;
+    
+    return 0;
+}
