@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <set>
 
 void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPart, std::string& SecondPart)
 {
@@ -12,17 +13,71 @@ void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPar
     }
 }
 
+int CharToInt(char Digit)
+{
+    return(Digit -'0');
+}
+
+int AddDigitToNumber(char Digit, int Number)
+{
+    int RealDigit = CharToInt(Digit);
+    Number *= 10;
+    Number += RealDigit;
+    return(Number);
+}
+
+int CountWonNumbersOnCard(std::string Card)
+{
+    int Result = 0;
+    std::string WinningNumberString;
+    std::string CardNumbers;
+    char Delimiter = '|';
+    SplitInTwo(Card, Delimiter, WinningNumberString, CardNumbers);
+    //std::cout << "WinningNumbers: " << WinningNumberString << "CardNumbers: " << CardNumbers << std::endl;
+    std::set<char> WinningNumbers;
+    int Number = 0;
+    for(int i = 0; i < WinningNumberString.length(); i++)
+    {
+        if (std::isdigit(WinningNumberString[i]))
+        {
+            Number = AddDigitToNumber(WinningNumberString[i], Number);
+        }
+        else
+        {
+            WinningNumbers.insert(Number);
+            Number = 0;
+        }
+    }
+    
+    Number = 0;
+    for(int i = 0; i < CardNumbers.length(); i++)
+    {
+        if (std::isdigit(CardNumbers[i]))
+        {
+            Number = AddDigitToNumber(CardNumbers[i], Number);
+        }
+        else
+        {
+            auto pos = WinningNumbers.find(Number);
+            if (pos != WinningNumbers.end())
+            {
+                Result += 1;
+            }
+            Number = 0;
+        }
+    }
+    
+    return(Result);
+}
+
 int main()
 {
     std::string Card;
-    std::string WinningNumbers;
-    std::string CardNumbers;
-    char Delimiter = '|';
-    
+    int NumbersWon = 0;
     while(std::getline(std::cin, Card))
     {
-        SplitInTwo(Card, Delimiter, WinningNumbers, CardNumbers);
-        std::cout << "WinningNumbers: " << WinningNumbers << "CardNumbers: " << CardNumbers << std::endl;
+        NumbersWon = CountWonNumbersOnCard(Card);
+        std::cout << NumbersWon << std::endl;
     }
    
     
