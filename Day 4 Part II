@@ -1,0 +1,160 @@
+#include <iostream>
+#include <string>
+#include <set>
+#include <cmath>
+#include <vector>
+
+typedef std::vector<int> Vint;
+typedef std::vector<int>:: iterator Vit;
+
+void print(std::vector<int> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPart, std::string& SecondPart)
+{
+    std::size_t SplitAt;
+    SplitAt = StrintToSplit.find(Delimiter);
+    if (SplitAt!=std::string::npos)
+    {
+        FirstPart = StrintToSplit.substr(0, SplitAt);
+        SecondPart = StrintToSplit.substr(SplitAt + 1, StrintToSplit.length());
+    }
+}
+
+int CharToInt(char Digit)
+{
+    return(Digit -'0');
+}
+
+int AddDigitToNumber(char Digit, int Number)
+{
+    int RealDigit = CharToInt(Digit);
+    Number *= 10;
+    Number += RealDigit;
+    return(Number);
+}
+
+void SplitCard(std::string Card, std::string& WinningNumberString, std::string& CardNumbers)
+{
+    char Delimiter = '|';
+    std::string start;
+    SplitInTwo(Card, Delimiter, WinningNumberString, CardNumbers);
+    Delimiter = ':';
+    SplitInTwo(WinningNumberString, Delimiter, start,WinningNumberString);
+}
+
+
+int CountWonNumbersOnCard(std::string Card)
+{
+    std::string WinningNumberString;
+    std::string CardNumbers;
+    SplitCard(Card, WinningNumberString, CardNumbers);
+    
+    std::set<char> WinningNumbers;
+    int Number = 0;
+    bool LastWasADigit = false;
+    for(int i = 0; i < WinningNumberString.length(); i++)
+    {
+        
+        if (std::isdigit(WinningNumberString[i]))
+        {
+            Number = AddDigitToNumber(WinningNumberString[i], Number);
+            LastWasADigit = true;
+        }
+        else
+        {
+            if (LastWasADigit)
+            {
+                WinningNumbers.insert(Number);
+                //std::cout << " Number inserted: " << Number;
+            }
+            Number = 0;
+            LastWasADigit = false;
+        }
+    }
+    
+    int Result = 0;
+    Number = 0;
+    LastWasADigit = false;
+    for(int i = 0; i < CardNumbers.length(); i++)
+    {
+        if (std::isdigit(CardNumbers[i]))
+        {
+            Number = AddDigitToNumber(CardNumbers[i], Number);
+            LastWasADigit = true;
+        }
+        else
+        {
+            if (LastWasADigit)
+            {
+                //std::cout << "Number tested: " << Number;
+                auto pos = WinningNumbers.find(Number);
+                if (pos != WinningNumbers.end())
+                {
+                    Result += 1;
+                    //std::cout << "Number won: " << Number;
+                }
+            }
+            Number = 0;
+            LastWasADigit = false;
+        }
+    }
+    
+    return(Result);
+}
+
+
+void PadCard(std::string& Card)
+{
+    Card += ' ';
+}
+
+void FillNumbersWon(Vint& NumbersWon)
+{
+    int TotalWorth = 0;
+    std::string Card;
+    
+    while(std::getline(std::cin, Card))
+    {
+        PadCard(Card);
+        NumbersWon.push_back(CountWonNumbersOnCard(Card));
+    }
+}
+
+void CountCardCopies(int CardNumber, int NumberOfWonCards, Vint& CardCopies, const Vint& NumbersWon)
+{
+    int N = CardCopies.size();
+    for(int i = 0; ((i < NumberOfWonCards)&&((CardNumber + i) < N)); i++)
+    {
+        CardCopies[CardNumber +i] += 1;
+        CountCardCopies(CardNumber, NumbersWon[CardNumber +i], CardCopies, NumbersWon);
+    }
+    
+}
+
+int SumArray(Vit begin, Vit end)
+{
+    int sum = 0;
+    for(Vit i = begin; i < end; i++ )
+    {
+        sum += *i;
+    }
+    return(sum);
+}
+
+int main()
+{
+    Vint NumbersWon;
+    FillNumbersWon(NumbersWon);
+    //print(NumbersWon);
+    Vint CardCopies(NumbersWon.size(), 1);
+    print(CardCopies);
+    std::cout << std::endl;
+    int result = SumArray(CardCopies.begin(), CardCopies.end());
+    std::cout << "Total Number of ScrachCards: " << result;
+    return 0;
+}
