@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include <cmath>
 
 void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPart, std::string& SecondPart)
 {
@@ -28,58 +29,99 @@ int AddDigitToNumber(char Digit, int Number)
 
 int CountWonNumbersOnCard(std::string Card)
 {
-    int Result = 0;
+    
     std::string WinningNumberString;
     std::string CardNumbers;
     char Delimiter = '|';
+    std::string start;
     SplitInTwo(Card, Delimiter, WinningNumberString, CardNumbers);
+    Delimiter = ':';
+    SplitInTwo(WinningNumberString, Delimiter, start,WinningNumberString);
     //std::cout << "WinningNumbers: " << WinningNumberString << "CardNumbers: " << CardNumbers << std::endl;
     std::set<char> WinningNumbers;
     int Number = 0;
+    bool LastWasADigit = false;
     for(int i = 0; i < WinningNumberString.length(); i++)
     {
+        
         if (std::isdigit(WinningNumberString[i]))
         {
             Number = AddDigitToNumber(WinningNumberString[i], Number);
+            LastWasADigit = true;
         }
         else
         {
-            WinningNumbers.insert(Number);
+            if (LastWasADigit)
+            {
+                WinningNumbers.insert(Number);
+                //std::cout << " Number inserted: " << Number;
+            }
             Number = 0;
+            LastWasADigit = false;
         }
     }
     
+    int Result = 0;
     Number = 0;
+    LastWasADigit = false;
     for(int i = 0; i < CardNumbers.length(); i++)
     {
         if (std::isdigit(CardNumbers[i]))
         {
             Number = AddDigitToNumber(CardNumbers[i], Number);
+            LastWasADigit = true;
         }
         else
         {
-            auto pos = WinningNumbers.find(Number);
-            if (pos != WinningNumbers.end())
+            if (LastWasADigit)
             {
-                Result += 1;
+                //std::cout << "Number tested: " << Number;
+                auto pos = WinningNumbers.find(Number);
+                if (pos != WinningNumbers.end())
+                {
+                    Result += 1;
+                    //std::cout << "Number won: " << Number;
+                }
             }
             Number = 0;
+            LastWasADigit = false;
         }
     }
     
     return(Result);
 }
 
+int CalculateWorth(int NumbersWon)
+{
+    if (NumbersWon == 0)
+    {
+        return(0);
+    }
+    else
+    {
+        return(std::pow(2,(NumbersWon-1)));
+    }
+}
+
+void PadCard(std::string& Card)
+{
+    Card += ' ';
+}
+
 int main()
 {
+    int TotalWorth = 0;
     std::string Card;
     int NumbersWon = 0;
     while(std::getline(std::cin, Card))
     {
+        PadCard(Card);
+        //std::cout << std::endl << Card << std::endl;
         NumbersWon = CountWonNumbersOnCard(Card);
-        std::cout << NumbersWon << std::endl;
+        TotalWorth += CalculateWorth(NumbersWon);
+        //std::cout << "NumbersWon: " << NumbersWon << " worth: " << CalculateWorth(NumbersWon) << std::endl;
     }
    
-    
+    std::cout << "total worth: " << TotalWorth;
     return 0;
 }
