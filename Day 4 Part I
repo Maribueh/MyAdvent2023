@@ -1,0 +1,30 @@
+#include <iostream>
+#include <string>
+
+void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPart, std::string& SecondPart)
+{
+    std::size_t SplitAt;
+    SplitAt = StrintToSplit.find(Delimiter);
+    if (SplitAt!=std::string::npos)
+    {
+        FirstPart = StrintToSplit.substr(0, SplitAt);
+        SecondPart = StrintToSplit.substr(SplitAt + 1, StrintToSplit.length());
+    }
+}
+
+int main()
+{
+    std::string Card;
+    std::string WinningNumbers;
+    std::string CardNumbers;
+    char Delimiter = '|';
+    
+    while(std::getline(std::cin, Card))
+    {
+        SplitInTwo(Card, Delimiter, WinningNumbers, CardNumbers);
+        std::cout << "WinningNumbers: " << WinningNumbers << "CardNumbers: " << CardNumbers << std::endl;
+    }
+   
+    
+    return 0;
+}
