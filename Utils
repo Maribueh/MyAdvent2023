@@ -22,3 +22,8 @@ void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPar
         SecondPart = StrintToSplit.substr(SplitAt + 1, StrintToSplit.length());
     }
 }
+
+int CharToInt(char Digit)
+{
+    return(Digit -'0');
+}
