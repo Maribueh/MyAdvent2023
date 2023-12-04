@@ -125,15 +125,25 @@ void FillNumbersWon(Vint& NumbersWon)
     }
 }
 
-void CountCardCopies(int CardNumber, int NumberOfWonCards, Vint& CardCopies, const Vint& NumbersWon)
+void CountCardCopies(int CardNumber, Vint& CardCopies, const Vint& NumbersWon)
 {
     int N = CardCopies.size();
-    for(int i = 0; ((i < NumberOfWonCards)&&((CardNumber + i) < N)); i++)
+    int NumberOfWonCards = NumbersWon.at(CardNumber);
+    //Dont start at zero!
+    for(int i = 1; ((i <= NumberOfWonCards)&&((CardNumber + i) < N)); i++)
     {
-        CardCopies[CardNumber +i] += 1;
-        CountCardCopies(CardNumber, NumbersWon[CardNumber +i], CardCopies, NumbersWon);
+        CardCopies.at(CardNumber +i) += 1;
+        CountCardCopies(CardNumber +i, CardCopies, NumbersWon);
     }
     
+}
+
+void CountCardCopies(Vint& CardCopies, const Vint& NumbersWon)
+{
+    for(int i = 0; i < NumbersWon.size(); i++)
+    {
+        CountCardCopies(i, CardCopies, NumbersWon);
+    }
 }
 
 int SumArray(Vit begin, Vit end)
@@ -150,8 +160,10 @@ int main()
 {
     Vint NumbersWon;
     FillNumbersWon(NumbersWon);
-    //print(NumbersWon);
+    print(NumbersWon);
+    std::cout << std::endl;
     Vint CardCopies(NumbersWon.size(), 1);
+    CountCardCopies(CardCopies, NumbersWon);
     print(CardCopies);
     std::cout << std::endl;
     int result = SumArray(CardCopies.begin(), CardCopies.end());
