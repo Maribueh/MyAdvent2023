@@ -160,12 +160,8 @@ int main()
 {
     Vint NumbersWon;
     FillNumbersWon(NumbersWon);
-    print(NumbersWon);
-    std::cout << std::endl;
     Vint CardCopies(NumbersWon.size(), 1);
     CountCardCopies(CardCopies, NumbersWon);
-    print(CardCopies);
-    std::cout << std::endl;
     int result = SumArray(CardCopies.begin(), CardCopies.end());
     std::cout << "Total Number of ScrachCards: " << result;
     return 0;
