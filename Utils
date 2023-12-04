@@ -11,3 +11,14 @@ void print(std::vector<bool> const &input)
         std::cout << input.at(i) << ' ';
     }
 }
+
+void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPart, std::string& SecondPart)
+{
+    std::size_t SplitAt;
+    SplitAt = StrintToSplit.find(Delimiter);
+    if (SplitAt!=std::string::npos)
+    {
+        FirstPart = StrintToSplit.substr(0, SplitAt);
+        SecondPart = StrintToSplit.substr(SplitAt + 1, StrintToSplit.length());
+    }
+}
