@@ -1,0 +1,70 @@
+#include <iostream>
+#include <string>
+#include <vector>
+typedef std::vector<int> Vint;
+typedef std::vector<int>:: iterator Vit;
+
+//Utils (todo auslagern)
+void print(std::vector<int> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+int CharToInt(char Digit)
+{
+    return(Digit -'0');
+}
+
+int AddDigitToNumber(char Digit, int Number)
+{
+    int RealDigit = CharToInt(Digit);
+    Number *= 10;
+    Number += RealDigit;
+    return(Number);
+}
+
+void FillVectorFromNumberString(std::string NumberString, Vint& A)
+{
+    NumberString += ' ';
+    int Number = 0;
+    bool LastWasADigit = false;
+    for(int i = 0; i < NumberString.length(); i++)
+    {
+        char next = NumberString[i];
+        
+        if (std::isdigit(next))
+        {
+            Number = AddDigitToNumber(next, Number);
+            LastWasADigit = true;
+        }
+        else
+        {
+            if (LastWasADigit)
+            {
+                A.push_back(Number);
+            }
+            Number = 0;
+            LastWasADigit = false;
+
+        }
+    }
+}
+
+//task related stuff
+void ReedSeeds(Vint& Seeds)
+{
+    std::string SeedString;
+    std::getline(std::cin, SeedString);
+    FillVectorFromNumberString(SeedString, Seeds);
+}
+
+int main()
+{
+    Vint Seeds;
+    Vint LocationNumbers;
+    ReedSeeds(Seeds);
+    print(Seeds);
+    return 0;
+}
