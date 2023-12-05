@@ -61,6 +61,17 @@ void FillVectorFromNumberString(std::string NumberString, Vint& A)
     }
 }
 
+int Min(Vint& A)
+{
+    int min = A.at(0);
+    for(int i = 0; i < A.size(); i++)
+    {
+        min  = std::min(A.at(i), min);
+    }
+    return(min);
+
+}
+
 //task related stuff
 void ReedSeeds(Vint& Seeds)
 {
@@ -160,7 +171,7 @@ int main()
     //HumidityToLocation;
     ReadAndApplyMapper(Locations);
     
-    print(Locations);
+    std::cout << "minimal location:" << Min(Locations);
     
     return 0;
 }
