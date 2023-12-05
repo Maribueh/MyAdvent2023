@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-typedef std::vector<int> Vint;
-typedef std::vector <std::vector<int>> Vintint;
-typedef std::vector<int>:: iterator Vit;
+typedef std::vector<unsigned int> Vint;
+typedef std::vector <std::vector<unsigned int>> Vintint;
+typedef std::vector<unsigned int>:: iterator Vit;
 
 //Utils (todo auslagern)
 void print(Vint const &input)
@@ -13,7 +13,7 @@ void print(Vint const &input)
     }
 }
 
-void print(std::vector<std::vector<int>>& input)
+void print(Vintint& input)
 {
     for (int i = 0; i < input.size(); i++) {
         print(input.at(i));
@@ -21,14 +21,14 @@ void print(std::vector<std::vector<int>>& input)
     }
 }
 
-int CharToInt(char Digit)
+unsigned int CharToInt(char Digit)
 {
     return(Digit -'0');
 }
 
-int AddDigitToNumber(char Digit, int Number)
+unsigned int AddDigitToNumber(char Digit, unsigned int Number)
 {
-    int RealDigit = CharToInt(Digit);
+    unsigned int RealDigit = CharToInt(Digit);
     Number *= 10;
     Number += RealDigit;
     return(Number);
@@ -37,7 +37,7 @@ int AddDigitToNumber(char Digit, int Number)
 void FillVectorFromNumberString(std::string NumberString, Vint& A)
 {
     NumberString += ' ';
-    int Number = 0;
+    unsigned int Number = 0;
     bool LastWasADigit = false;
     for(int i = 0; i < NumberString.length(); i++)
     {
@@ -61,9 +61,9 @@ void FillVectorFromNumberString(std::string NumberString, Vint& A)
     }
 }
 
-int Min(Vint& A)
+unsigned Min(Vint& A)
 {
-    int min = A.at(0);
+    unsigned int min = A.at(0);
     for(int i = 0; i < A.size(); i++)
     {
         min  = std::min(A.at(i), min);
@@ -103,26 +103,26 @@ struct Mapper
     Mapper(const Vintint& Map): Mapping(Map), n(Map.size())
     {}
     
-    int MapTo(int i, int x)
+    int MapTo(int i, unsigned int x)
     {
         Vint MapRange = Mapping.at(i);
-        int DestinationStart = MapRange.at(0);
-        int SourceStart = MapRange.at(1);
-        int Range = MapRange.at(2);
-        int Difference = x - SourceStart;
+        unsigned int DestinationStart = MapRange.at(0);
+        unsigned int SourceStart = MapRange.at(1);
+        unsigned int Range = MapRange.at(2);
+        unsigned int Difference = x - SourceStart;
         if ((Difference >= 0) && (Difference < Range))
         {
-            int y = DestinationStart + Difference;
+            unsigned int y = DestinationStart + Difference;
             return(y);
         }
         return(x);
     }
     
-    int MapTo(int x)
+    int MapTo(unsigned int x)
     {
         for(int i = 0; i < n; i++)
         {
-            int y = MapTo(i, x);
+            unsigned int y = MapTo(i, x);
             if (x != y)
             {
                 return(y);
@@ -155,23 +155,39 @@ int main()
 {
     Vint Seeds;
     ReedSeeds(Seeds);
+    std::cout << "Seeds: ";
+    //print(Seeds);
+    //std::cout << std::endl;
     Vint Locations = Seeds;
     //SeedToSoil
     ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
     //SoilToFertilizer;
     ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
     //FertilizerToWater;
     ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
     //WaterToLight;
     ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
     //LightToTemperature;
     ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
     //TemperatureToHumidity;
     ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
     //HumidityToLocation;
     ReadAndApplyMapper(Locations);
-    
-    std::cout << "minimal location:" << Min(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    std::cout << "minimal location: " << Min(Locations);
     
     return 0;
 }
