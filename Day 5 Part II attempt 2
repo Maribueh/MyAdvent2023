@@ -1,0 +1,221 @@
+#include <iostream>
+#include <string>
+#include <vector>
+typedef std::vector<unsigned int> Vint;
+typedef std::vector <std::vector<unsigned int>> Vintint;
+typedef std::vector<unsigned int>:: iterator Vit;
+
+//Utils (todo auslagern)
+void print(Vint const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+void print(Vintint& input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        print(input.at(i));
+        std::cout << std::endl;
+    }
+}
+
+unsigned int CharToInt(char Digit)
+{
+    return(Digit -'0');
+}
+
+unsigned int AddDigitToNumber(char Digit, unsigned int Number)
+{
+    unsigned int RealDigit = CharToInt(Digit);
+    Number *= 10;
+    Number += RealDigit;
+    return(Number);
+}
+
+void FillVectorFromNumberString(std::string NumberString, Vint& A)
+{
+    NumberString += ' ';
+    unsigned int Number = 0;
+    bool LastWasADigit = false;
+    for(int i = 0; i < NumberString.length(); i++)
+    {
+        char next = NumberString[i];
+        
+        if (std::isdigit(next))
+        {
+            Number = AddDigitToNumber(next, Number);
+            LastWasADigit = true;
+        }
+        else
+        {
+            if (LastWasADigit)
+            {
+                A.push_back(Number);
+            }
+            Number = 0;
+            LastWasADigit = false;
+
+        }
+    }
+}
+
+unsigned Min(Vint& A)
+{
+    unsigned int min = A.at(0);
+    for(int i = 0; i < A.size(); i++)
+    {
+        min  = std::min(A.at(i), min);
+    }
+    return(min);
+
+}
+
+//task related stuff
+void ReedSeeds(Vint& Seeds)
+{
+    std::string SeedString;
+    std::getline(std::cin, SeedString);
+    FillVectorFromNumberString(SeedString, Seeds);
+    std::string EmptyLine;
+    std::getline(std::cin, EmptyLine);
+}
+
+void ReadMap(Vintint& Map)
+{
+    std::string MapString;
+    std::getline(std::cin, MapString);
+    while(std::getline(std::cin, MapString))
+    {
+        if (not std::isdigit(MapString[0])) {break;};
+        Vint MapLine;
+        FillVectorFromNumberString(MapString, MapLine);
+        Map.push_back(MapLine);
+    }
+}
+
+struct Mapper
+{
+    Vintint Mapping;
+    int n;
+    
+    Mapper(const Vintint& Map): Mapping(Map), n(Map.size())
+    {}
+    
+    int Map(int DestinationStart, int SourceStart, int Range, int x)
+    {
+        unsigned int Difference = x - SourceStart;
+        if ((Difference >= 0) && (Difference < Range))
+        {
+            unsigned int y = DestinationStart + Difference;
+            return(y);
+        }
+        return(x);
+    }
+    
+    
+    int MapTo(int i, unsigned int x)
+    {
+        Vint MapRange = Mapping.at(i);
+        unsigned int DestinationStart = MapRange.at(0);
+        unsigned int SourceStart = MapRange.at(1);
+        return(Map(DestinationStart, SourceStart, Range, x))
+    }
+    
+    int MapFrom(int i, unsigned int y)
+    {
+        Vint MapRange = Mapping.at(i);
+        unsigned int DestinationStart = MapRange.at(0);
+        unsigned int SourceStart = MapRange.at(1);
+        return(Map(SourceStart, DestinationStart, Range, y))
+    }
+    
+    int MapTo(unsigned int x)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            unsigned int y = MapTo(i, x);
+            if (x != y)
+            {
+                return(y);
+            }
+            
+        }
+        
+        return(x);   
+    }
+    
+    
+    
+    int MapFrom(unsigned int y)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            unsigned int y = MapFrom(i, x);
+            if (x != y)
+            {
+                return(y);
+            }
+            
+        }
+    }
+    
+    void Apply(Vint& X)
+    {
+        for(int i = 0; i < X.size(); i++)
+        {
+            X.at(i) = MapTo(X.at(i));
+        }
+    }
+};
+
+void ReadAndApplyMapper(Vint& X)
+{
+    Vintint Map;
+    ReadMap(Map);
+    Mapper TheMapper = Mapper(Map);
+    TheMapper.Apply(X);
+}
+
+
+int main()
+{
+    Vint Seeds;
+    ReedSeeds(Seeds);
+    std::cout << "Seeds: ";
+    //print(Seeds);
+    //std::cout << std::endl;
+    Vint Locations = Seeds;
+    //SeedToSoil
+    ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    //SoilToFertilizer;
+    ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    //FertilizerToWater;
+    ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    //WaterToLight;
+    ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    //LightToTemperature;
+    ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    //TemperatureToHumidity;
+    ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    //HumidityToLocation;
+    ReadAndApplyMapper(Locations);
+    //print(Locations);
+    //std::cout << std::endl;
+    std::cout << "minimal location: " << Min(Locations);
+    
+    return 0;
+}
