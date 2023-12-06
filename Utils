@@ -1,63 +1,24 @@
-void print(std::vector<int> const &input)
+#include <iostream>
+#include <string>
+#include <vector>
+typedef std::vector<int> Vint;
+typedef std::vector<bool> Vbool;
+typedef std::vector <std::vector<int>> Vintint;
+typedef std::vector< int>:: iterator Vit;
+
+//Utils (todo auslagern)
+void print(Vint const &input)
 {
     for (int i = 0; i < input.size(); i++) {
         std::cout << input.at(i) << ' ';
     }
 }
 
-void print(std::vector<std::vector<int>>& input)
+void print(Vintint& input)
 {
     for (int i = 0; i < input.size(); i++) {
         print(input.at(i));
         std::cout << std::endl;
-    }
-}
-
-void print(std::vector<bool> const &input)
-{
-    for (int i = 0; i < input.size(); i++) {
-        std::cout << input.at(i) << ' ';
-    }
-}
-
-int Min(Vint& A)
-{
-    int min = A.at(0);
-    for(int i = 0; i < A.size(); i++)
-    {
-        min  = std::min(A.at(i), min);
-    }
-    return(min);
-
-}
-
-int SumArray(Vit begin, Vit end)
-{
-    int sum = 0;
-    for(Vit i = begin; i < end; i++ )
-    {
-        sum += *i;
-    }
-    return(sum);
-}
-
-int MulitplyArray(Vint& A)
-{
-    int product = 1;
-    for(int i = 0; i < A.size(); i++ )
-    {
-        product *= A.at(i);
-    }
-    return(product);
-}
-void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPart, std::string& SecondPart)
-{
-    std::size_t SplitAt;
-    SplitAt = StrintToSplit.find(Delimiter);
-    if (SplitAt!=std::string::npos)
-    {
-        FirstPart = StrintToSplit.substr(0, SplitAt);
-        SecondPart = StrintToSplit.substr(SplitAt + 1, StrintToSplit.length());
     }
 }
 
@@ -66,7 +27,7 @@ int CharToInt(char Digit)
     return(Digit -'0');
 }
 
-int AddDigitToNumber(char Digit, int Number)
+ int AddDigitToNumber(char Digit, int Number)
 {
     int RealDigit = CharToInt(Digit);
     Number *= 10;
@@ -97,6 +58,11 @@ void FillVectorFromNumberString(std::string NumberString, Vint& A)
             Number = 0;
             LastWasADigit = false;
 
+        }
+    }
+}
+
+
 void ReadNumbersInNextLine(Vint& Numbers)
 {
     std::string NextLine;
@@ -104,6 +70,111 @@ void ReadNumbersInNextLine(Vint& Numbers)
     FillVectorFromNumberString(NextLine, Numbers);
 }
 
+void FillVectorFromZeroTon(int n, Vint& X)
+{
+    for(int i = 0; i < n; i++)
+    {
+        X.push_back(i);
+    }
+}
+
+int SumArray(Vint& A)
+{
+    int sum = 0;
+    for(int i = 0; i < A.size(); i++ )
+    {
+        sum += A.at(i);
+    }
+    return(sum);
+}
+
+int MulitplyArray(Vint& A)
+{
+    int product = 1;
+    for(int i = 0; i < A.size(); i++ )
+    {
+        product *= A.at(i);
+    }
+    return(product);
+}
+
+
+//task related stuff
+
+struct Mapper
+{
+    int Time; 
+    
+    Mapper(const int T): Time(T)
+    {}
+    
+    int MapTo(int x)
+    {
+        int y = x*(Time-x);
+        y = std::max(y, 0);
+        return(y);
+    }
+    
+    void Apply(Vint& X)
+    {
+        for(int i = 0; i < X.size(); i++)
+        {
+            X.at(i) = MapTo(X.at(i));
         }
     }
+};
+
+
+void PrepareSource(int Time, Vint& X)
+{
+    FillVectorFromZeroTon(Time, X);
+}
+
+void IsBiggerThan(Vint& Y, int y, Vint& Result)
+{
+    
+    for(int i = 0; i < Y.size(); i++)
+    {
+        Result.at(i) = Y.at(i) > y;
+    }
+}
+
+void CountPossibilites(Vint& Times, Vint& Distances, Vint& Possibilites)
+{
+    for(int i = 0; i< Times.size(); i++)
+    {
+        Vint X;
+        PrepareSource(Times.at(i), X);
+        Mapper function = Mapper(Times.at(i));
+        function.Apply(X);
+        Vint Y = X;
+        Vint IsBigger (Y.size(), 0);
+        IsBiggerThan(Y, Distances.at(i), IsBigger);
+        int n = SumArray(IsBigger);
+        Possibilites.push_back(n);
+    }
+}
+
+
+int main()
+{
+    Vint Times;
+    ReadNumbersInNextLine(Times);
+    std::cout << "Time: ";
+    print(Times);
+    std:: cout << std::endl;
+    Vint Distances;
+    ReadNumbersInNextLine(Distances);
+    std::cout << "Distance: ";
+    print(Distances);
+    std:: cout << std::endl;
+    Vint Possibilites;
+    CountPossibilites(Times, Distances, Possibilites);
+    std::cout << "Number of Possibilites: ";
+    print(Possibilites);
+    std::cout << std::endl;
+    int PossibilitesProduct = MulitplyArray(Possibilites);
+    std::cout << "Product of Possibilites: ";
+    std::cout << PossibilitesProduct;
+    return 0;
 }
