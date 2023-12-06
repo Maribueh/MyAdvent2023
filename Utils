@@ -87,6 +87,13 @@ void FillVectorFromNumberString(std::string NumberString, Vint& A)
             Number = 0;
             LastWasADigit = false;
 
+void ReadNumbersInNextLine(Vint& Numbers)
+{
+    std::string NextLine;
+    std::getline(std::cin, NextLine);
+    FillVectorFromNumberString(NextLine, Numbers);
+}
+
         }
     }
 }
