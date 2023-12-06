@@ -138,9 +138,9 @@ void CountPossibilites(Vint& Times, Vint& Distances, Vint& Possibilites)
         Mapper function = Mapper(Times.at(i));
         function.Apply(X);
         Vint Y = X;
-        Vint IsBiggerThan (Y.size(), 0);
-        IsBiggerThan(Y, Distances.at(i), IsBiggerThan);
-        int n = SumArray(IsBiggerThan);
+        Vint IsBigger (Y.size(), 0);
+        IsBiggerThan(Y, Distances.at(i), IsBigger);
+        int n = SumArray(IsBigger);
         Possibilites.push_back(n);
     }
     
