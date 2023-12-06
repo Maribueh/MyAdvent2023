@@ -1,0 +1,166 @@
+#include <iostream>
+#include <string>
+#include <vector>
+typedef std::vector<int> Vint;
+typedef std::vector<bool> Vbool;
+typedef std::vector <std::vector<int>> Vintint;
+typedef std::vector< int>:: iterator Vit;
+
+//Utils (todo auslagern)
+void print(Vint const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+void print(Vintint& input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        print(input.at(i));
+        std::cout << std::endl;
+    }
+}
+
+int CharToInt(char Digit)
+{
+    return(Digit -'0');
+}
+
+ int AddDigitToNumber(char Digit, int Number)
+{
+    int RealDigit = CharToInt(Digit);
+    Number *= 10;
+    Number += RealDigit;
+    return(Number);
+}
+
+void FillVectorFromNumberString(std::string NumberString, Vint& A)
+{
+    NumberString += ' ';
+    int Number = 0;
+    bool LastWasADigit = false;
+    for(int i = 0; i < NumberString.length(); i++)
+    {
+        char next = NumberString[i];
+        
+        if (std::isdigit(next))
+        {
+            Number = AddDigitToNumber(next, Number);
+            LastWasADigit = true;
+        }
+        else
+        {
+            if (LastWasADigit)
+            {
+                A.push_back(Number);
+            }
+            Number = 0;
+            LastWasADigit = false;
+
+        }
+    }
+}
+
+
+void ReadNumbersInNextLine(Vint& Numbers)
+{
+    std::string NextLine;
+    std::getline(std::cin, NextLine);
+    FillVectorFromNumberString(NextLine, Numbers);
+}
+
+void FillVectorFromZeroTon(int n, Vint& X)
+{
+    for(int i = 0; i < n; i++)
+    {
+        X.push_back(i);
+    }
+}
+
+int SumArray(Vint& A)
+{
+    int sum = 0;
+    for(int i = 0; i < A.size(); i++ )
+    {
+        sum += A.at(i);
+    }
+    return(sum);
+}
+
+
+//task related stuff
+
+struct Mapper
+{
+    int Time; 
+    
+    Mapper(const int T): Time(T)
+    {}
+    
+    int MapTo(int x)
+    {
+        int y = x*(Time-x);
+        y = std::max(y, 0);
+        return(y);
+    }
+    
+    void Apply(Vint& X)
+    {
+        for(int i = 0; i < X.size(); i++)
+        {
+            X.at(i) = MapTo(X.at(i));
+        }
+    }
+};
+
+
+void PrepareSource(int Time, Vint& X)
+{
+    FillVectorFromZeroTon(Time, X);
+}
+
+void IsBiggerThan(Vint& Y, int y, Vint& Result)
+{
+    
+    for(int i = 0; i < Y.size(); i++)
+    {
+        Result.at(i) = Y.at(i) > y;
+    }
+}
+
+void CountPossibilites(Vint& Times, Vint& Distances, Vint& Possibilites)
+{
+    for(int i = 0; i< Times.size(); i++)
+    {
+        Vint X;
+        PrepareSource(Times.at(i), X);
+        Mapper function = Mapper(Times.at(i));
+        function.Apply(X);
+        Vint Y = X;
+        Vint IsBiggerThan (Y.size(), 0);
+        IsBiggerThan(Y, Distances.at(i), IsBiggerThan);
+        int n = SumArray(IsBiggerThan);
+        Possibilites.push_back(n);
+    }
+    
+    
+}
+
+int main()
+{
+    Vint Times;
+    ReadNumbersInNextLine(Times);
+    std::cout << "Time: ";
+    print(Times);
+    std:: cout << std::endl;
+    Vint Distances;
+    ReadNumbersInNextLine(Distances);
+    std::cout << "Distance: ";
+    print(Distances);
+    std:: cout << std::endl;
+    Vint Possibilites;
+    CountPossibilites(Times, Distances, Possibilites);
+    print(Possibilites);
+    return 0;
+}
