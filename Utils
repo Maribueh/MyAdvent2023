@@ -40,6 +40,16 @@ int SumArray(Vit begin, Vit end)
     }
     return(sum);
 }
+
+int MulitplyArray(Vint& A)
+{
+    int product = 1;
+    for(int i = 0; i < A.size(); i++ )
+    {
+        product *= A.at(i);
+    }
+    return(product);
+}
 void SplitInTwo(std::string StrintToSplit, char Delimiter, std::string& FirstPart, std::string& SecondPart)
 {
     std::size_t SplitAt;
