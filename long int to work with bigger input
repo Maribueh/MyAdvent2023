@@ -1,0 +1,183 @@
+#include <iostream>
+#include <string>
+#include <vector>
+typedef std::vector<long int> Vlongint;
+typedef std::vector<bool> Vbool;
+typedef std::vector <std::vector<long int>> Vlongintint;
+typedef std::vector< long int>:: iterator Vit;
+
+//Utils (todo auslagern)
+void print(Vlongint const &input)
+{
+    for (long int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+void print(Vlongintint& input)
+{
+    for (long int i = 0; i < input.size(); i++) {
+        print(input.at(i));
+        std::cout << std::endl;
+    }
+}
+
+long int CharTolongint(char Digit)
+{
+    return(Digit -'0');
+}
+
+ long int AddDigitToNumber(char Digit, long int Number)
+{
+    long int RealDigit = CharTolongint(Digit);
+    Number *= 10;
+    Number += RealDigit;
+    return(Number);
+}
+
+void FillVectorFromNumberString(std::string NumberString, Vlongint& A)
+{
+    NumberString += ' ';
+    long int Number = 0;
+    bool LastWasADigit = false;
+    for(long int i = 0; i < NumberString.length(); i++)
+    {
+        char next = NumberString[i];
+        
+        if (std::isdigit(next))
+        {
+            Number = AddDigitToNumber(next, Number);
+            LastWasADigit = true;
+        }
+        else
+        {
+            if (LastWasADigit)
+            {
+                A.push_back(Number);
+            }
+            Number = 0;
+            LastWasADigit = false;
+
+        }
+    }
+}
+
+
+void ReadNumbersInNextLine(Vlongint& Numbers)
+{
+    std::string NextLine;
+    std::getline(std::cin, NextLine);
+    FillVectorFromNumberString(NextLine, Numbers);
+}
+
+void FillVectorFromZeroTon(long int n, Vlongint& X)
+{
+    for(long int i = 0; i < n; i++)
+    {
+        X.push_back(i);
+    }
+}
+
+long int SumArray(Vlongint& A)
+{
+    long int sum = 0;
+    for(long int i = 0; i < A.size(); i++ )
+    {
+        sum += A.at(i);
+    }
+    return(sum);
+}
+
+long int MulitplyArray(Vlongint& A)
+{
+    long int product = 1;
+    for(long int i = 0; i < A.size(); i++ )
+    {
+        product *= A.at(i);
+    }
+    return(product);
+}
+
+
+//task related stuff
+
+struct Mapper
+{
+    long int Time; 
+    
+    Mapper(const long int T): Time(T)
+    {}
+    
+    long int MapTo(long int x)
+    {
+        long int y = x*(Time-x);
+        if (y > 0)
+        {
+            return(y);
+        }
+        return(0);
+    }
+    
+    void Apply(Vlongint& X)
+    {
+        for(long int i = 0; i < X.size(); i++)
+        {
+            X.at(i) = MapTo(X.at(i));
+        }
+    }
+};
+
+
+void PrepareSource(long int Time, Vlongint& X)
+{
+    FillVectorFromZeroTon(Time, X);
+}
+
+void IsBiggerThan(Vlongint& Y, long int y, Vlongint& Result)
+{
+    
+    for(long int i = 0; i < Y.size(); i++)
+    {
+        Result.at(i) = Y.at(i) > y;
+    }
+}
+
+void CountPossibilites(Vlongint& Times, Vlongint& Distances, Vlongint& Possibilites)
+{
+    for(long int i = 0; i< Times.size(); i++)
+    {
+        Vlongint X;
+        PrepareSource(Times.at(i), X);
+        Mapper function = Mapper(Times.at(i));
+        function.Apply(X);
+        Vlongint Y = X;
+        Vlongint IsBigger (Y.size(), 0);
+        IsBiggerThan(Y, Distances.at(i), IsBigger);
+        long int n = SumArray(IsBigger);
+        Possibilites.push_back(n);
+    }
+}
+
+
+int main()
+{
+    Vlongint Times;
+    ReadNumbersInNextLine(Times);
+    std::cout << "Time: ";
+    print(Times);
+    std:: cout << std::endl;
+    Vlongint Distances;
+    ReadNumbersInNextLine(Distances);
+    std::cout << "Distance: ";
+    print(Distances);
+    std:: cout << std::endl;
+    Vlongint Possibilites;
+    CountPossibilites(Times, Distances, Possibilites);
+    std::cout << "Number of Possibilites: ";
+    print(Possibilites);
+    std::cout << std::endl;
+    long int PossibilitesProduct = MulitplyArray(Possibilites);
+    std::cout << "Product of Possibilites: ";
+    std::cout << PossibilitesProduct;
+    return 0;
+}
