@@ -1,0 +1,155 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+typedef std::map<std::string, std::pair<std::string, std::string>> PointMap;
+typedef std::pair<std::string, std::string> PointPair;
+
+
+//Utils (todo auslagern)
+
+void print(PointPair Point)
+{
+    std::cout << '(' << Point.first << ',' << Point.second << ')';
+}
+
+void print(std::vector<std::string>& input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input.at(i) << ' ';
+    }
+}
+
+//task related stuff
+bool IsEndPoint(std::string Point)
+{
+    int n = Point.size();
+    if (Point[n - 1] == 'Z')
+    {
+        return(true);
+    }
+    return(false);
+}
+bool IsEnd(std::vector<std::string>& StartingPoints)
+{
+    
+    for(int i = 0; i < StartingPoints.size(); i++)
+    {
+        if (not IsEndPoint(StartingPoints[i]))
+        {
+            return(false);
+        }
+    }
+    return(true);
+}
+    
+bool IsStartingPoint(std::string Point)
+{
+    int n = Point.size();
+    if (Point[n - 1] == 'A')
+    {
+        return(true);
+    }
+    return(false);
+}
+
+std::string ReadNextPoint(std::string& Line)
+{
+    std::string point;
+    bool end = false;
+    for(int i = 0; i < Line.size(); i++)
+    {
+        if (std::isalpha(Line[i]) || std::isdigit(Line[i]))
+        {
+            if (end)
+            {
+                Line.erase(0,i);
+                return(point);
+            }
+            point += Line[i];
+        }
+        else
+        {
+            end = true;
+        }
+    }
+}
+
+void ReadNextLine(std::string NextLine, PointMap& Map, std::vector<std::string>& StartingPoints)
+{
+    std::string Key = ReadNextPoint(NextLine);
+    std::string Left = ReadNextPoint(NextLine);
+    std::string Right = ReadNextPoint(NextLine);
+    PointPair Point {Left, Right};
+    Map[Key] = Point;
+    if (IsStartingPoint(Key))
+    {
+        StartingPoints.push_back(Key);
+    }
+}
+
+void ReadMap(PointMap& Map, std::vector<std::string>& StartingPoints)
+{
+    std::string NextLine;
+    while(std::getline(std::cin, NextLine))
+    {
+        ReadNextLine(NextLine, Map, StartingPoints); 
+    }
+}
+
+std::string TakeNextStep(char Direction, std::string LastPoint, PointMap& Map)
+{
+    PointPair PossibleNextSteps = Map[LastPoint];
+    if (Direction == 'L')
+    {
+        return(PossibleNextSteps.first);
+    }
+    else 
+    {
+        return(PossibleNextSteps.second);
+    }
+}
+
+void TakeNextStepSimultanously(char Direction, std::vector<std::string>& StartingPoints, PointMap& Map)
+{
+    for(int i = 0; i < StartingPoints.size(); i++)
+    {
+        StartingPoints.at(i) = TakeNextStep(Direction, StartingPoints.at(i), Map);
+    }
+}
+
+int CountStepsFollowingDirections(std::string Directions, std::vector<std::string>& StartingPoints, PointMap& Map)
+{
+    int Steps = 0;
+    char NextDirection;
+    int N = Directions.size();
+    for(int i = 0; not IsEnd(StartingPoints) ; i++)    
+    {
+    
+        if (i == N)
+        {
+            i = 0;
+        }
+     
+        TakeNextStepSimultanously(Directions[i], StartingPoints, Map);
+        Steps += 1;
+    }
+    return(Steps);
+}
+
+
+
+int main()
+{
+    std::string Directions;
+    std::getline(std::cin, Directions);
+    std::string EmptyLine;
+    std::getline(std::cin, EmptyLine);
+    PointMap Map;
+    std::vector<std::string> StartingPoints;
+    ReadMap(Map, StartingPoints);
+    int Steps = 0;
+    Steps = CountStepsFollowingDirections(Directions, StartingPoints, Map);
+    std::cout << "Number of steps used: " << Steps;
+    return 0;
+}
