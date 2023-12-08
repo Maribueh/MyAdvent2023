@@ -8,6 +8,10 @@ typedef std::pair<std::string, std::string> PointPair;
 
 //Utils (todo auslagern)
 
+void print(PointPair Point)
+{
+    std::cout << '(' << Point.first << ',' << Point.second << ')';
+}
 
 //task related stuff
 
@@ -50,8 +54,37 @@ void ReadMap(PointMap& Map)
         ReadNextLine(NextLine, Map); 
     }
 }
-    
 
+std::string TakeNextStep(char Direction, std::string LastPoint, PointMap& Map)
+{
+    PointPair PossibleNextSteps = Map[LastPoint];
+    if (Direction == 'L')
+    {
+        return(PossibleNextSteps.first);
+    }
+    else 
+    {
+        return(PossibleNextSteps.second);
+    }
+}
+    
+int CountStepsFollowingDirections(std::string Directions, PointMap& Map)
+{
+    int Steps = 0;
+    char NextDirection;
+    std::string LastPoint = "AAA";
+    int N = Directions.size();
+    for(int i = 0; LastPoint != "ZZZ"; i++)    
+    {
+        if (i == N)
+        {
+            i = 0;
+        }
+        LastPoint = TakeNextStep(Directions[i], LastPoint, Map);
+        Steps += 1;
+    }
+    return(Steps);
+}
 
 int main()
 {
@@ -61,5 +94,8 @@ int main()
     std::getline(std::cin, EmptyLine);
     PointMap Map;
     ReadMap(Map);
+    int Steps = 0;
+    Steps = CountStepsFollowingDirections(Directions, Map);
+    std::cout << "Number of steps used: " << Steps;
     return 0;
 }
